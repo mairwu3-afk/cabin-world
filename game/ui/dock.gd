@@ -325,8 +325,10 @@ func rebuild() -> void:
 		var id: String = pair[0]
 		_button(pair[1], tab == id, func(): _change(func(): tab = id; _next_activity = 0.0), _top)
 	if tab not in ["bag", "props"] and not VadsLink.connected and usage.is_empty():
-		if collection_view: _collection.present(tab,[],1,"","机器人软件没有连上，暂时看不到这些记录。")
-		else: _list.add_child(_label("机器人软件没有连上，暂时看不到这些记录。", 13, Hud.INK2))
+		# 手机版走单机记录；连机器人软件（桌面）时才需要那句提示
+		var offline := "这里先显示单机记录；连上机器人软件后自动同步。" if OS.has_feature("mobile") else "机器人软件没有连上，暂时看不到这些记录。"
+		if collection_view: _collection.present(tab,[],1,"",offline)
+		else: _list.add_child(_label(offline, 13, Hud.INK2))
 		return
 	match tab:
 		"bag":

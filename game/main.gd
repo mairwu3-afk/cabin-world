@@ -21,6 +21,10 @@ var _dock: Dock
 var _arcade: ArcadePanel
 var _arcade_show := false
 var observing := false
+var _mobile := OS.has_feature("mobile")
+var _dock_open := false ## 手机默认折叠右侧面板；右上「面板」按钮展开
+var _dock_dim: ColorRect ## 抽屉暗底（手机）
+var _safe := Vector4.ZERO ## 左/上/右/下逻辑内边距（手机刘海/挖孔），_layout 每次重算
 var _stage: Node2D
 var _room_camera:Node
 var _restaurant:Node
@@ -57,6 +61,8 @@ func _ready() -> void:
 	_display = FixedWindow.new()
 	add_child(_display)
 	get_window().title = "小屋世界"
+	if _mobile:
+		get_window().content_scale_factor = 1.5 ## 手机 1:1 像素下 UI 太细：整体放大 1.5 倍（逻辑画布约 1584×720）
 	if not WorldData.scenes.has(view_scene): view_scene = str(Residents.people()[0]["start"][0])
 	_read_arguments()
 	if _test_scene!="" and WorldData.scenes.has(_test_scene):
@@ -66,11 +72,12 @@ func _ready() -> void:
 	add_child(_landscape)
 	_build_petals()
 	_hud = Hud.new()
-	add_child(_hud)
+	add_child(_hud) # HUD 保持在默认 z：抽屉(z=6)在它上面才能接到点击
 	_hud.scene_picked.connect(_on_scene_picked)
 	_hud.character_picked.connect(_on_character_picked)
 	_hud.follow_picked.connect(_on_follow_picked)
 	_hud.room_clicked.connect(_on_room_clicked)
+	_hud.dock_picked.connect(func(): _set_dock_open(not _dock_open))
 	_view = Control.new()
 	_view.clip_contents = true
 	_view.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -81,7 +88,14 @@ func _ready() -> void:
 	add_child(_room_camera)
 	_room_camera.setup(self)
 	_dock = Dock.new()
+	_dock.z_index = 6
 	add_child(_dock)
+	_dock_dim = ColorRect.new()
+	_dock_dim.color = Color(0.05,0.08,0.15,0.55)
+	_dock_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_dock_dim.z_index = 5
+	_dock_dim.visible = false
+	add_child(_dock_dim)
 	_arcade = ArcadePanel.new()
 	add_child(_arcade)
 	for id in WorldData.available_order():
@@ -389,6 +403,8 @@ func _on_room_clicked(at: Vector2) -> void:
 
 func _on_scene_picked(id: String) -> void:
 	follow = -1
+	if _mobile and _dock_open:
+		_set_dock_open(false) # 切场景时收起抽屉，把屏幕还给房间
 	_show_room(id)
 
 
@@ -421,6 +437,38 @@ func _show_room(id: String) -> void:
 		_layout()
 
 
+## 手机刘海/挖孔：返回 左/上/右/下 的逻辑内边距（物理安全区按 content_scale_factor 换算）。
+func _safe_insets() -> Vector4:
+	if not _mobile:
+		return Vector4.ZERO
+	var scale := get_window().content_scale_factor
+	if scale <= 0.0:
+		scale = 1.0
+	var screen := DisplayServer.screen_get_size()
+	var safe := DisplayServer.get_display_safe_area()
+	# 安全区取不到 / 旋转后尺寸对不上时直接当作没有刘海，别把布局推歪
+	if safe.size.x <= 0 or safe.size.y <= 0 or safe.size.x > screen.x or safe.size.y > screen.y:
+		return Vector4.ZERO
+	var l := float(safe.position.x) / scale
+	var t := float(safe.position.y) / scale
+	var r := float(screen.x - safe.position.x - safe.size.x) / scale
+	var bo := float(screen.y - safe.position.y - safe.size.y) / scale
+	return Vector4(maxf(l, 0.0), maxf(t, 0.0), maxf(r, 0.0), maxf(bo, 0.0))
+
+
+## 手机右面板抽屉：默认折叠，点右上「面板」展开；开着时挂 ui_modal，世界别把手指当拖动。
+func _set_dock_open(open: bool) -> void:
+	if _dock_open == open:
+		return
+	_dock_open = open
+	if _dock != null:
+		if _mobile and open:
+			_dock.add_to_group("ui_modal")
+		else:
+			_dock.remove_from_group("ui_modal")
+	_layout()
+
+
 func _layout() -> void:
 	if _hud == null or _view == null:
 		return
@@ -430,29 +478,48 @@ func _layout() -> void:
 	var H := size.y
 	var frame := 8.0
 	var margin := 10.0
+	_safe = _safe_insets()
+	_hud.safe_insets = _safe
 	_hud.navigation_layout(W)
 	var top := _hud.tabs_bottom + 4.0
-	var low := H - _hud.grass_height - 6.0
+	var low := H - _hud.grass_height - 6.0 - _safe.w
+	var pad_l := margin + _safe.x
+	var pad_r := margin + _safe.z
 	var room: Room = rooms[view_scene]
 	var wide := true # fixed logical canvas; resizing never rearranges the interface
 	var cards: Array[Rect2] = []
 	var k := 1.0
 	var sw := 0.0
 	var sh := 0.0
-	var sx := margin + frame
+	var sx := pad_l + frame
 	var sy := top + frame
 	var dock_rect := Rect2()
+	var drawer := _mobile and _dock_open and not observing # 手机：面板是覆盖抽屉，房间不缩
 	if wide:
 		var side := 0.0 if observing else W * 0.20
-		var right := W - side - margin * 2.0
-		k = minf((right - margin - 2.0 * frame) / room.width, (low - top - 2.0 * frame) / room.height)
+		if _mobile:
+			side = 0.0
+		var right := W - side - pad_r
+		k = minf((right - pad_l - 2.0 * frame) / room.width, (low - top - 2.0 * frame) / room.height)
 		sw = room.width * k
 		sh = room.height * k
-		sx = floorf(margin + (right - margin - sw) / 2.0)
+		sx = floorf(pad_l + (right - pad_l - sw) / 2.0)
 		sy = floorf(top + (low - top - sh) / 2.0)
-		var cx := W - side - margin
-		cards = [Rect2(cx, top, side, 124.0), Rect2(cx, top + 130.0, side, 124.0)]
-		dock_rect = Rect2(cx, top + 260.0, side, low - top - 260.0)
+		if _mobile:
+			var cw := minf(W * 0.42, 320.0)
+			var ch := 104.0
+			cards = [Rect2(W - pad_r - cw, top, cw, ch)]
+			_hud.dock_button_rect = Rect2(W - pad_r - cw, top + ch + 8.0, cw, 48.0)
+		else:
+			var cx := W - side - margin
+			cards = [Rect2(cx, top, side, 124.0), Rect2(cx, top + 130.0, side, 124.0)]
+			dock_rect = Rect2(cx, top + 260.0, side, low - top - 260.0)
+			_hud.dock_button_rect = Rect2()
+		if drawer:
+			var dw := minf(W * 0.46, 780.0)
+			cards.clear()
+			_hud.dock_button_rect = Rect2(W - pad_r - 150.0, top, 150.0, 48.0)
+			dock_rect = Rect2(W - pad_r - dw, top, dw, low - top)
 	else:
 		var cards_h := 116.0
 		var room_limit := maxf(180.0, (low - top) * (0.58 if H >= 620.0 else 0.5))
@@ -474,8 +541,8 @@ func _layout() -> void:
 	_hud.frame_rect = Rect2(sx, sy, sw, sh)
 	_hud.queue_redraw()
 	_arcade_show = ArcadePanel.available(view_scene)
-	_arcade.visible = _arcade_show and not observing
-	if _arcade_show:
+	_arcade.visible = _arcade_show and not observing and not drawer
+	if _arcade_show and not drawer:
 		var half := floorf((dock_rect.size.y - 6.0) / 2.0)
 		_arcade.position = dock_rect.position
 		_arcade.size = Vector2(dock_rect.size.x, half)
@@ -485,6 +552,11 @@ func _layout() -> void:
 	if _dock.visible:
 		_dock.position = dock_rect.position
 		_dock.size = dock_rect.size
+	if _dock_dim != null:
+		_dock_dim.visible = drawer
+		if drawer:
+			_dock_dim.position = Vector2.ZERO
+			_dock_dim.size = size
 	_landscape.size = size
 	_landscape.queue_redraw()
 	_petals.emission_rect_extents = Vector2(W / 2.0, 2.0)

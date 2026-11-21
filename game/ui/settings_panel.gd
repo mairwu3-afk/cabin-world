@@ -42,10 +42,8 @@ func _ready() -> void:
 		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT: close())
 	_sheet = PanelContainer.new()
 	_sheet.set_anchors_preset(Control.PRESET_CENTER)
-	_sheet.offset_left = -450 if _mobile else -380
-	_sheet.offset_right = 450 if _mobile else 380
-	_sheet.offset_top = -380 if _mobile else -300
-	_sheet.offset_bottom = 380 if _mobile else 300
+	_fit_sheet() # 手机 content_scale_factor 变大后可视区变小，弹窗按可视区收，别出屏
+	get_viewport().size_changed.connect(_fit_sheet)
 	_sheet.add_theme_stylebox_override("panel",_box(Hud.PAPER,Hud.WOOD,4,20))
 	add_child(_sheet)
 	var theme_of := Theme.new()
@@ -263,6 +261,7 @@ func _field(value: String, parent: Node) -> LineEdit:
 	return field
 
 func open() -> void:
+	_fit_sheet()
 	show()
 	_load_npc_skin()
 	_load_world_options()
@@ -273,6 +272,19 @@ func open() -> void:
 	_fullscreen.button_pressed = get_window().mode == Window.MODE_FULLSCREEN
 	_display_status.text = "当前窗口：%d × %d" % [get_window().size.x,get_window().size.y]
 	_status.text=""
+
+## 弹窗尺寸跟可视区走（手机 1.5 倍 UI 下 760 高会顶到屏幕边）。
+func _fit_sheet() -> void:
+	if _sheet == null:
+		return
+	var view := get_viewport().get_visible_rect().size
+	var half_w := minf(450.0 if _mobile else 380.0, view.x * 0.46)
+	var half_h := minf(380.0 if _mobile else 300.0, view.y * 0.44)
+	_sheet.offset_left = -half_w
+	_sheet.offset_right = half_w
+	_sheet.offset_top = -half_h
+	_sheet.offset_bottom = half_h
+
 
 func close() -> void:
 	_key.clear()

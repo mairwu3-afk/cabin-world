@@ -5,6 +5,7 @@ extends Control
 signal scene_picked(id: String)
 signal settings_picked()
 signal chat_picked()
+signal dock_picked() ## 手机端右上「面板」按钮：展开/收起右侧抽屉
 signal home_editor_picked()
 signal character_picked(index: int)
 signal follow_picked(index: int)
@@ -60,6 +61,10 @@ var card_rects: Array[Rect2] = []
 var decor_area := Rect2()
 var tabs_bottom := 58.0
 var grass_height := 28.0
+var safe_insets := Vector4.ZERO ## 左/上/右/下（逻辑像素，手机刘海/挖孔）；main 每次 _layout 前写入
+var dock_button_rect := Rect2() ## 手机端右上「面板」按钮；main 设置，0 尺寸表示不显示
+var map_open := false ## 手机端「地图」菜单
+var _mobile := OS.has_feature("mobile")
 
 var _hits: Array = []
 var _mouse := Vector2(-1, -1)
@@ -104,15 +109,30 @@ func _gui_input(event: InputEvent) -> void:
 				if h[1] >= 0:
 					if h[2] == "@follow": follow_picked.emit(h[1])
 					else: character_picked.emit(h[1])
+				elif h[2] == "@dock":
+					dock_picked.emit()
+				elif h[2] == "@map":
+					map_open = not map_open
+					queue_redraw()
 				elif h[2] == "@chat":
+					map_open = false
 					chat_picked.emit()
 				elif h[2] == "@settings":
+					map_open = false
 					settings_picked.emit()
 				elif h[2] == "@home-editor":
 					home_editor_picked.emit()
 				else:
+					map_open = false
+					queue_redraw()
 					scene_picked.emit(h[2])
 				return
+		if map_open: # 点空处先收起地图菜单，不误点房间
+			map_open = false
+			queue_redraw()
+			return
+		if UiModal.is_open(get_tree()): # 抽屉/面板开着时，空白处的点击不传给世界
+			return
 		if frame_rect.has_point(event.position):
 			room_clicked.emit(event.position - frame_rect.position)
 
@@ -177,6 +197,12 @@ func _draw() -> void:
 		_draw_card(i, r.position.x, r.position.y, r.size.x, r.size.y)
 	if decor_area.size.y > 0.0:
 		_draw_decor(decor_area.position.x, decor_area.position.y, decor_area.size.x, decor_area.end.y)
+	if _mobile:
+		_weather.visible = false # 手机顶栏右上是头像卡/面板按钮，天气牌让位
+		if dock_button_rect.size.y > 0.0:
+			_draw_dock_button()
+		if map_open:
+			_draw_map_menu()
 
 func _draw_beam_and_tabs(W: float) -> void:
 	var beam := 7 * U
@@ -187,12 +213,12 @@ func _draw_beam_and_tabs(W: float) -> void:
 	while i * 37 * U < W:
 		_box(i * 37 * U + 4 * U, 3 * U, 11 * U, U, WOOD_L)
 		i += 1
-	var x := 12.0
+	var x := 12.0 + safe_insets.x
 	if W >= 1040.0:
-		_paper(x, 11, 118, 40)
-		_text("小屋世界", x + 4, 37, 110, 15, INK, _bold, true)
-		_box(x + 20, beam, U, 11 - beam, WOOD_D)
-		_box(x + 96, beam, U, 11 - beam, WOOD_D)
+		_paper(x, 11 + safe_insets.y, 118, 40)
+		_text("小屋世界", x + 4, 37 + safe_insets.y, 110, 15, INK, _bold, true)
+		_box(x + 20, beam, U, 11 + safe_insets.y - beam, WOOD_D)
+		_box(x + 96, beam, U, 11 + safe_insets.y - beam, WOOD_D)
 		x += 132.0
 	for entry in navigation_layout(W):
 		var id: String = entry.id
@@ -201,19 +227,24 @@ func _draw_beam_and_tabs(W: float) -> void:
 		x = area.position.x
 		var w := area.size.x
 		var y := area.position.y + (3.0 if area.has_point(_mouse) else 1.0)
+		var h := area.size.y
+		var font_size := 16 if _mobile else 14
 		var on: bool = view_scene == id
-		_notched(x, y, w, 38, WOOD_D)
-		_notched(x + U, y + U, w - 2 * U, 38 - 2 * U, PAPER if on else WOOD)
+		_notched(x, y, w, h, WOOD_D)
+		_notched(x + U, y + U, w - 2 * U, h - 2 * U, PAPER if on else WOOD)
 		_box(x + 2 * U, y + U, w - 4 * U, U, PAPER_H if on else WOOD_H)
-		_box(x + 2 * U, y + 38 - 2 * U, w - 4 * U, U, PAPER_D if on else WOOD_S)
+		_box(x + 2 * U, y + h - 2 * U, w - 4 * U, U, PAPER_D if on else WOOD_S)
+		var iy := y + (h - 16.0) * 0.5
 		if id == "@settings":
-			_icon([["..wwww..", ".ww..ww.", "ww.ww.ww", "w.w..w.w", "w.w..w.w", "ww.ww.ww", ".ww..ww.", "..wwww.."], {"w":"fdf3dd"}], x+6, y+11)
+			_icon([["..wwww..", ".ww..ww.", "ww.ww.ww", "w.w..w.w", "w.w..w.w", "ww.ww.ww", ".ww..ww.", "..wwww.."], {"w":"fdf3dd"}], x+6, iy)
 		elif id == "@chat":
-			_icon([["........", "..wwww..", ".wwwwww.", "wwwwwwww", "wwwwwwww", "wwwwwwww", ".wwwwww.", "..ww...."], {"w":"fdf3dd"}], x+6, y+11)
+			_icon([["........", "..wwww..", ".wwwwww.", "wwwwwwww", "wwwwwwww", "wwwwwwww", ".wwwwww.", "..ww...."], {"w":"fdf3dd"}], x+6, iy)
+		elif id == "@map":
+			_icon([["..wwww..", ".w....w.", "w..ww..w", "w..ww..w", "w......w", "w..ww..w", ".w....w.", "..wwww.."], {"w":"fdf3dd"}], x+6, iy)
 		elif id == "@home-editor":
-			_icon([["ww....ww","ww....ww","wwwwwwww","wwwwwwww","..wwww..","..wwww..","..w..w..","..w..w.."],{"w":"fdf3dd"}],x+6,y+11)
-		else: _icon(ICONS.get(id,ICONS["qianxia-home"]), x + 3 * U, y + 11)
-		_text(name_of, x + 27, y + 25, w-27, 14, INK if on else CREAM)
+			_icon([["ww....ww","ww....ww","wwwwwwww","wwwwwwww","..wwww..","..wwww..","..w..w..","..w..w.."],{"w":"fdf3dd"}],x+6,iy)
+		else: _icon(ICONS.get(id,ICONS["qianxia-home"]), x + 3 * U, iy)
+		_text(name_of, x + 27, y + h * 0.5 + font_size * 0.35, w-27, font_size, INK if on else CREAM)
 		_hits.append([area.grow_individual(4.0, 0.0, 4.0, 10.0), -1, id]) ## 手机 1:1 像素下 42px 太矮，往左右下放大几像素当触摸目标
 		var present := occupants(id)
 		for j in present.size():
@@ -228,23 +259,61 @@ func _draw_beam_and_tabs(W: float) -> void:
 ## Settings follows the supplied room list, including rooms added in the future.
 func navigation_layout(width: float, order: Array = []) -> Array:
 	var result := []
-	var x := 144.0 if width >= 1040 else 12.0
-	var y := 10.0
-	var limit := width-438.0
-	var ids := WorldData.available_order() if order.is_empty() else order.duplicate()
+	var left := 12.0 + safe_insets.x
+	var x := (144.0 if width >= 1040 else 12.0) + safe_insets.x
+	var y := 10.0 + safe_insets.y
+	var limit := width - 438.0 - safe_insets.z
+	var ids: Array = []
+	if _mobile:
+		## 手机顶栏只留 地图 / 聊天 / 设置；房间收进「地图」菜单，按钮给手指留足高度
+		ids = ["@map"]
+	else:
+		## 桌面保持原样：每个地点一个 tab
+		ids = WorldData.available_order() if order.is_empty() else order.duplicate()
 	if Features.on("ai-chat"):
 		ids.append("@chat")
 	ids.append("@settings")
+	var tab_h := 48.0 if _mobile else 42.0
 	for id in ids:
-		var label := "聊天" if id=="@chat" else "布置家具 F6" if id=="@home-editor" else "设置" if id=="@settings" else str(TAB_NAMES.get(id,WorldData.scenes.get(id,{}).get("name",id)))
+		var label := "地图" if id=="@map" else "聊天" if id=="@chat" else "布置家具 F6" if id=="@home-editor" else "设置" if id=="@settings" else str(TAB_NAMES.get(id,WorldData.scenes.get(id,{}).get("name",id)))
 		var w := 48.0+label.length()*14.0+(0.0 if str(id).begins_with("@") else maxf(2,characters.size())*24.0)
-		if x+w>limit and x>12:
-			x = 12
-			y += 46
-		result.append({"id":id,"label":label,"area":Rect2(x,y,w,42)})
+		if x+w>limit and x>left:
+			x = left
+			y += tab_h + 4.0
+		result.append({"id":id,"label":label,"area":Rect2(x,y,w,tab_h)})
 		x += w+8
-	tabs_bottom = y+48
+	tabs_bottom = y+tab_h+6.0
 	return result
+
+## 手机右上角「面板」按钮：展开/收起右侧抽屉（main.gd 负责抽屉本身）。
+func _draw_dock_button() -> void:
+	var p := dock_button_rect.position
+	var s := dock_button_rect.size
+	_paper(p.x, p.y, s.x, s.y, dock_button_rect.has_point(_mouse))
+	_text("面板", p.x, p.y + s.y * 0.5 + 7.0, s.x, 18, INK, _bold, true)
+	_hits.append([dock_button_rect, -1, "@dock"])
+
+
+## 手机「地图」菜单：竖排房间列表，点一项切场景并收起。
+func _draw_map_menu() -> void:
+	var ids := WorldData.available_order()
+	if ids.is_empty():
+		return
+	var x := 12.0 + safe_insets.x
+	var y := tabs_bottom + 6.0
+	var w := minf(260.0, size.x * 0.34)
+	var h := 48.0
+	_paper(x - 8.0, y - 8.0, w + 16.0, h * ids.size() + 16.0)
+	for id in ids:
+		var label := str(TAB_NAMES.get(id, WorldData.scenes.get(id, {}).get("name", id)))
+		var area := Rect2(x, y, w, h)
+		var on: bool = view_scene == id
+		_notched(area.position.x, area.position.y, area.size.x, h, WOOD_D)
+		_notched(area.position.x + U, area.position.y + U, area.size.x - 2 * U, h - 2 * U, PAPER if on else WOOD)
+		_text(label, area.position.x + 16.0, area.position.y + h * 0.5 + 7.0, area.size.x - 32.0, 18, INK if on else CREAM)
+		_hits.append([area, -1, id])
+		y += h + 4.0
+
 
 func occupants(id: String) -> Array:
 	var present := []
