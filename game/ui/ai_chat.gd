@@ -320,8 +320,10 @@ func _add_bubble(text: String, mine: bool, tone := "") -> void:
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	label.add_theme_font_size_override("font_size", FONT_SIZE)
 	label.add_theme_color_override("font_color", Hud.RED if tone == "error" else Hud.INK)
-	if text.length() > 30:
-		label.custom_minimum_size.x = BUBBLE_MAX
+	## 气泡宽度按字数估算：中文一字≈字号宽。不设的话 AUTOWRAP 会把 Label 压到 1 字宽，
+	## 短句就会竖着排（真机首版踩过）。
+	var per_char := FONT_SIZE + 2.0
+	label.custom_minimum_size.x = clampf(float(text.length()) * per_char + 28.0, 200.0, BUBBLE_MAX)
 	bubble.add_child(label)
 	if not mine:
 		var right := Control.new()
