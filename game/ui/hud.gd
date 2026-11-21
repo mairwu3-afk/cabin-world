@@ -194,7 +194,10 @@ func _draw() -> void:
 	_wood(frame_rect.position.x - 4 * U, frame_rect.position.y - 4 * U, frame_rect.size.x + 8 * U, frame_rect.size.y + 8 * U)
 	for i in card_rects.size():
 		var r := card_rects[i]
-		_draw_card(i, r.position.x, r.position.y, r.size.x, r.size.y)
+		if _mobile: # 手机窄卡：头像留 12 内边距，不贴边框，也不放「跟随」小按钮（只有一个住户）
+			_draw_mobile_card(r.position.x, r.position.y, r.size.x, r.size.y)
+		else:
+			_draw_card(i, r.position.x, r.position.y, r.size.x, r.size.y)
 	if decor_area.size.y > 0.0:
 		_draw_decor(decor_area.position.x, decor_area.position.y, decor_area.size.x, decor_area.end.y)
 	if _mobile:
@@ -284,6 +287,34 @@ func navigation_layout(width: float, order: Array = []) -> Array:
 		x += w+8
 	tabs_bottom = y+tab_h+6.0
 	return result
+
+## 手机紧凑住户卡：头像 96 方块四周留 12 内边距，名字/地点分行，别贴纸面边框。
+func _draw_mobile_card(x: float, y: float, w: float, h: float) -> void:
+	if characters.is_empty():
+		return
+	var c: Character = characters[0]
+	var area := Rect2(x, y, w, h)
+	_paper(x, y, w, h, area.has_point(_mouse))
+	var ps := minf(96.0, h - 24.0)
+	var px := x + 12.0
+	var py := y + floorf((h - ps) * 0.5)
+	_notched(px - 2.0, py - 2.0, ps + 4.0, ps + 4.0, WOOD_D)
+	_box(px, py, ps, ps, Color("232f55"))
+	var f := c.portrait_frame()
+	var r: Array = f["rect"]
+	var an: Array = f["anchor"]
+	var src := Rect2(float(r[0]) + float(an[0]) - 92.5, float(r[1]) + float(an[1]) - 278.0, 185.0, 185.0)
+	draw_texture_rect_region(f["texture"], Rect2(px, py, ps, ps), src, Color(1, 1, 1, 0.55) if c.sleeping else Color.WHITE)
+	var tx := px + ps + 14.0
+	var tw := x + w - tx - 12.0
+	_text(c.display_name, tx, y + 36.0, tw, 20, INK, _bold)
+	var where := "还没有数据"
+	if c.placed and WorldData.scenes.has(c.scene_id):
+		where = str(WorldData.scenes[c.scene_id]["name"]) + ("·走动中" if c.is_walking() else "")
+	_text(where, tx, y + 66.0, tw, 14, INK2)
+	_text("正在走动…" if c.is_walking() else "在这里待着", tx, y + 92.0, tw, 13, WOOD)
+	_hits.append([area, 0, ""])
+
 
 ## 手机右上角「面板」按钮：展开/收起右侧抽屉（main.gd 负责抽屉本身）。
 func _draw_dock_button() -> void:

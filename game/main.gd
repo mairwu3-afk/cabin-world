@@ -23,7 +23,7 @@ var _arcade_show := false
 var observing := false
 var _mobile := OS.has_feature("mobile")
 var _dock_open := false ## 手机默认折叠右侧面板；右上「面板」按钮展开
-var _dock_dim: ColorRect ## 抽屉暗底（手机）
+var _dock_toggle: Button ## 手机右上「面板/收起」按钮
 var _safe := Vector4.ZERO ## 左/上/右/下逻辑内边距（手机刘海/挖孔），_layout 每次重算
 var _stage: Node2D
 var _room_camera:Node
@@ -88,14 +88,23 @@ func _ready() -> void:
 	add_child(_room_camera)
 	_room_camera.setup(self)
 	_dock = Dock.new()
-	_dock.z_index = 6
 	add_child(_dock)
-	_dock_dim = ColorRect.new()
-	_dock_dim.color = Color(0.05,0.08,0.15,0.55)
-	_dock_dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_dock_dim.z_index = 5
-	_dock_dim.visible = false
-	add_child(_dock_dim)
+	if _mobile: # 手机：右上角真实按钮负责展开/收起右面板（盖在面板上也能点到）
+		_dock_toggle = Button.new()
+		_dock_toggle.z_index = 8
+		_dock_toggle.add_theme_font_size_override("font_size", 18)
+		_dock_toggle.add_theme_color_override("font_color", Hud.INK)
+		var box := StyleBoxFlat.new()
+		box.bg_color = Hud.PAPER_H
+		box.border_color = Hud.WOOD_L
+		box.set_border_width_all(2)
+		box.set_corner_radius_all(4)
+		_dock_toggle.add_theme_stylebox_override("normal", box)
+		_dock_toggle.add_theme_stylebox_override("hover", box)
+		_dock_toggle.add_theme_stylebox_override("pressed", box)
+		_dock_toggle.visible = false
+		_dock_toggle.pressed.connect(func(): _set_dock_open(not _dock_open))
+		add_child(_dock_toggle)
 	_arcade = ArcadePanel.new()
 	add_child(_arcade)
 	for id in WorldData.available_order():
@@ -461,11 +470,6 @@ func _set_dock_open(open: bool) -> void:
 	if _dock_open == open:
 		return
 	_dock_open = open
-	if _dock != null:
-		if _mobile and open:
-			_dock.add_to_group("ui_modal")
-		else:
-			_dock.remove_from_group("ui_modal")
 	_layout()
 
 
@@ -494,11 +498,10 @@ func _layout() -> void:
 	var sx := pad_l + frame
 	var sy := top + frame
 	var dock_rect := Rect2()
-	var drawer := _mobile and _dock_open and not observing # 手机：面板是覆盖抽屉，房间不缩
 	if wide:
 		var side := 0.0 if observing else W * 0.20
-		if _mobile:
-			side = 0.0
+		if _mobile: # 手机：默认收起；展开时给右侧面板让出固定一列（不覆盖房间）
+			side = (minf(W * 0.34, 560.0) if _dock_open else 0.0)
 		var right := W - side - pad_r
 		k = minf((right - pad_l - 2.0 * frame) / room.width, (low - top - 2.0 * frame) / room.height)
 		sw = room.width * k
@@ -507,19 +510,21 @@ func _layout() -> void:
 		sy = floorf(top + (low - top - sh) / 2.0)
 		if _mobile:
 			var cw := minf(W * 0.42, 320.0)
-			var ch := 104.0
+			var ch := 120.0
 			cards = [Rect2(W - pad_r - cw, top, cw, ch)]
-			_hud.dock_button_rect = Rect2(W - pad_r - cw, top + ch + 8.0, cw, 48.0)
+			_hud.dock_button_rect = Rect2()
+			if _dock_open:
+				dock_rect = Rect2(W - pad_r - side, top + ch + 8.0, side, low - top - ch - 8.0)
+			if _dock_toggle != null:
+				_dock_toggle.position = Vector2(W - pad_r - cw - 166.0, top)
+				_dock_toggle.size = Vector2(150.0, 48.0)
+				_dock_toggle.text = "收起" if _dock_open else "面板"
+				_dock_toggle.visible = not observing
 		else:
 			var cx := W - side - margin
 			cards = [Rect2(cx, top, side, 124.0), Rect2(cx, top + 130.0, side, 124.0)]
 			dock_rect = Rect2(cx, top + 260.0, side, low - top - 260.0)
 			_hud.dock_button_rect = Rect2()
-		if drawer:
-			var dw := minf(W * 0.46, 780.0)
-			cards.clear()
-			_hud.dock_button_rect = Rect2(W - pad_r - 150.0, top, 150.0, 48.0)
-			dock_rect = Rect2(W - pad_r - dw, top, dw, low - top)
 	else:
 		var cards_h := 116.0
 		var room_limit := maxf(180.0, (low - top) * (0.58 if H >= 620.0 else 0.5))
@@ -541,8 +546,8 @@ func _layout() -> void:
 	_hud.frame_rect = Rect2(sx, sy, sw, sh)
 	_hud.queue_redraw()
 	_arcade_show = ArcadePanel.available(view_scene)
-	_arcade.visible = _arcade_show and not observing and not drawer
-	if _arcade_show and not drawer:
+	_arcade.visible = _arcade_show and not observing
+	if _arcade_show:
 		var half := floorf((dock_rect.size.y - 6.0) / 2.0)
 		_arcade.position = dock_rect.position
 		_arcade.size = Vector2(dock_rect.size.x, half)
@@ -552,11 +557,6 @@ func _layout() -> void:
 	if _dock.visible:
 		_dock.position = dock_rect.position
 		_dock.size = dock_rect.size
-	if _dock_dim != null:
-		_dock_dim.visible = drawer
-		if drawer:
-			_dock_dim.position = Vector2.ZERO
-			_dock_dim.size = size
 	_landscape.size = size
 	_landscape.queue_redraw()
 	_petals.emission_rect_extents = Vector2(W / 2.0, 2.0)
