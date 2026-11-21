@@ -93,9 +93,11 @@ func _ready() -> void:
 		_dock_toggle = Button.new()
 		_dock_toggle.z_index = 8
 		_dock_toggle.add_theme_font_size_override("font_size", 18)
+		_dock_toggle.clip_text = false # 不裁文字：空灰框的另一个成因
 		var ui_font := SystemFont.new()
-		ui_font.font_names = PackedStringArray(["Microsoft YaHei", "Microsoft YaHei UI", "SimHei"])
-		_dock_toggle.add_theme_font_override("font", ui_font) # 默认主题字体没有中文字形，不设会画出空按钮
+		# 和 HUD 自己在用的字体完全一致（HUD 的顶栏中文在真机显示正常，复用它最稳）
+		ui_font.font_names = PackedStringArray(["Microsoft YaHei UI", "Microsoft YaHei", "SimHei"])
+		_dock_toggle.add_theme_font_override("font", ui_font)
 		_dock_toggle.add_theme_color_override("font_color", Hud.INK)
 		var box := StyleBoxFlat.new()
 		box.bg_color = Hud.PAPER_H
@@ -148,6 +150,7 @@ func _ready() -> void:
 				c.report_position())
 	SharedFeed.poll()
 	resized.connect(_layout)
+	get_viewport().size_changed.connect(_layout) # 首帧/横竖屏切换时 safe_area 会变，重新排一次
 	_show_room(view_scene)
 	_layout()
 	_warm_room_art.call_deferred()
@@ -449,23 +452,26 @@ func _show_room(id: String) -> void:
 		_layout()
 
 
-## 手机刘海/挖孔：返回 左/上/右/下 的逻辑内边距（物理安全区按 content_scale_factor 换算）。
+## 手机刘海/挖孔：把物理像素安全区换算成逻辑视口像素（左/上/右/下）。
+## DisplayServer/safe_area 是物理像素，Control 坐标是逻辑视口像素：必须用
+## 视口尺寸 / 窗口尺寸 的比值换算，不能直接除 content_scale_factor（会漏掉 expand 与基准视口的比例）。
 func _safe_insets() -> Vector4:
 	if not _mobile:
 		return Vector4.ZERO
-	var scale := get_window().content_scale_factor
-	if scale <= 0.0:
-		scale = 1.0
-	var screen := DisplayServer.screen_get_size()
-	var safe := DisplayServer.get_display_safe_area()
-	# 安全区取不到 / 旋转后尺寸对不上时直接当作没有刘海，别把布局推歪
-	if safe.size.x <= 0 or safe.size.y <= 0 or safe.size.x > screen.x or safe.size.y > screen.y:
+	var win := Vector2(DisplayServer.window_get_size())
+	var safe := Rect2(DisplayServer.get_display_safe_area())
+	if win.x <= 0.0 or win.y <= 0.0 or safe.size.x <= 0.0 or safe.size.y <= 0.0:
 		return Vector4.ZERO
-	var l := float(safe.position.x) / scale
-	var t := float(safe.position.y) / scale
-	var r := float(screen.x - safe.position.x - safe.size.x) / scale
-	var bo := float(screen.y - safe.position.y - safe.size.y) / scale
-	return Vector4(maxf(l, 0.0), maxf(t, 0.0), maxf(r, 0.0), maxf(bo, 0.0))
+	if safe.size.x > win.x or safe.size.y > win.y: # 旋转后尺寸对不上：当作没有刘海，别把布局推歪
+		return Vector4.ZERO
+	var vp := get_viewport().get_visible_rect().size
+	var sx := vp.x / win.x
+	var sy := vp.y / win.y
+	return Vector4(
+		maxf(0.0, safe.position.x) * sx,
+		maxf(0.0, safe.position.y) * sy,
+		maxf(0.0, win.x - safe.end.x) * sx,
+		maxf(0.0, win.y - safe.end.y) * sy)
 
 
 ## 手机右面板抽屉：默认折叠，点右上「面板」展开；开着时挂 ui_modal，世界别把手指当拖动。

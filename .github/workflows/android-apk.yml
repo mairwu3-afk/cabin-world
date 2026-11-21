@@ -109,6 +109,23 @@ jobs:
               print("import_etc2_astc already configured")
           PY
 
+      - name: Stamp build number (build_info.json + versionCode)
+        run: |
+          SHA_SHORT=$(git rev-parse --short=8 HEAD)
+          python3 - "${{ github.run_number }}" "$SHA_SHORT" <<'PY'
+          import json, re, sys
+          run, sha = sys.argv[1], sys.argv[2]
+          json.dump({"run": run, "sha": sha, "name": "b%s-%s" % (run, sha)},
+                    open("game/assets/build_info.json", "w", encoding="utf-8"),
+                    ensure_ascii=False, indent=2)
+          p = "game/export_presets.cfg"
+          s = open(p, encoding="utf-8").read()
+          s = re.sub(r"version/code=\d+", "version/code=%s" % run, s)
+          s = re.sub(r'version/name="[^"]*"', 'version/name="1.%s"' % run, s)
+          open(p, "w", encoding="utf-8").write(s)
+          PY
+          cat game/assets/build_info.json
+
       - name: Import project resources (2-pass for class_name cache)
         run: |
           GODOT_BIN="/tmp/godot-cache/Godot_v${GODOT_VERSION}-${GODOT_STATUS}_linux.x86_64"
@@ -120,10 +137,13 @@ jobs:
           GODOT_BIN="/tmp/godot-cache/Godot_v${GODOT_VERSION}-${GODOT_STATUS}_linux.x86_64"
           "$GODOT_BIN" --headless --verbose --path "${PROJECT_DIR}" --export-debug "${EXPORT_NAME}" "../${APK_OUT}"
           ls -lh "${APK_OUT}"
+          sha256sum "${APK_OUT}" | tee build/apk.sha256
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: da-feiyu-cabin-debug-apk
-          path: ${{ env.APK_OUT }}
+          path: |
+            ${{ env.APK_OUT }}
+            build/apk.sha256
           retention-days: 14

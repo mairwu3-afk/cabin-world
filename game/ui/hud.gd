@@ -66,6 +66,7 @@ var dock_button_rect := Rect2() ## 手机端右上「面板」按钮；main 设�
 var weather_rect := Rect2() ## 手机端时钟/天气牌的位置；0 尺寸表示不显示
 var map_open := false ## 手机端「地图」菜单
 var _mobile := OS.has_feature("mobile")
+var _build_tag := "" ## b<run_number> <sha>，CI 写进 res://assets/build_info.json；本地跑就是空
 
 var _hits: Array = []
 var _mouse := Vector2(-1, -1)
@@ -77,6 +78,10 @@ var _weather: WeatherBadge
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
+	if FileAccess.file_exists("res://assets/build_info.json"): # CI 每次构建写入，角落画出来方便核对版本
+		var build_info = JSON.parse_string(FileAccess.get_file_as_string("res://assets/build_info.json"))
+		if build_info is Dictionary:
+			_build_tag = str(build_info.get("name", ""))
 	_font = SystemFont.new()
 	_font.font_names = PackedStringArray(["Microsoft YaHei UI", "Microsoft YaHei", "SimHei"])
 	_bold = SystemFont.new()
@@ -201,6 +206,8 @@ func _draw() -> void:
 			_draw_card(i, r.position.x, r.position.y, r.size.x, r.size.y)
 	if decor_area.size.y > 0.0:
 		_draw_decor(decor_area.position.x, decor_area.position.y, decor_area.size.x, decor_area.end.y)
+	if _build_tag != "": # 版本角标：一眼确认手机上跑的是哪一次构建
+		draw_string(_font, Vector2(10.0 + safe_insets.x, H - 8.0 - safe_insets.w), _build_tag, HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color(1, 1, 1, 0.42))
 	if _mobile:
 		if dock_button_rect.size.y > 0.0:
 			_draw_dock_button()
