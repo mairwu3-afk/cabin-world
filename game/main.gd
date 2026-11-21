@@ -516,13 +516,16 @@ func _layout() -> void:
 			var ch := 120.0
 			cards = [Rect2(W - pad_r - cw, top + 56.0, cw, ch)]
 			_hud.dock_button_rect = Rect2()
+			var clock_h := 46.0
+			var clock_w := minf(410.0, maxf(cw, side))
+			_hud.weather_rect = Rect2(W - pad_r - clock_w, top + 56.0 + ch + 8.0, clock_w, clock_h)
 			if _dock_toggle != null:
 				_dock_toggle.position = Vector2(W - pad_r - cw, top)
 				_dock_toggle.size = Vector2(cw, 48.0)
 				_dock_toggle.text = "收起面板" if _dock_open else "面板"
 				_dock_toggle.visible = not observing
 			if _dock_open:
-				dock_rect = Rect2(W - pad_r - side, top + 56.0 + ch + 8.0, side, low - top - ch - 64.0)
+				dock_rect = Rect2(W - pad_r - side, top + 56.0 + ch + clock_h + 16.0, side, low - top - ch - clock_h - 72.0)
 		else:
 			var cx := W - side - margin
 			cards = [Rect2(cx, top, side, 124.0), Rect2(cx, top + 130.0, side, 124.0)]

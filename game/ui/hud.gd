@@ -63,6 +63,7 @@ var tabs_bottom := 58.0
 var grass_height := 28.0
 var safe_insets := Vector4.ZERO ## 左/上/右/下（逻辑像素，手机刘海/挖孔）；main 每次 _layout 前写入
 var dock_button_rect := Rect2() ## 手机端右上「面板」按钮；main 设置，0 尺寸表示不显示
+var weather_rect := Rect2() ## 手机端时钟/天气牌的位置；0 尺寸表示不显示
 var map_open := false ## 手机端「地图」菜单
 var _mobile := OS.has_feature("mobile")
 
@@ -201,7 +202,6 @@ func _draw() -> void:
 	if decor_area.size.y > 0.0:
 		_draw_decor(decor_area.position.x, decor_area.position.y, decor_area.size.x, decor_area.end.y)
 	if _mobile:
-		_weather.visible = false # 手机顶栏右上是头像卡/面板按钮，天气牌让位
 		if dock_button_rect.size.y > 0.0:
 			_draw_dock_button()
 		if map_open:
@@ -256,8 +256,15 @@ func _draw_beam_and_tabs(W: float) -> void:
 			_draw_avatar(characters[index],portrait)
 		if area.has_point(_mouse):
 			tooltip_text = name_of + (" · " + "、".join(PackedStringArray(present.map(func(k): return characters[k].display_name))) if not present.is_empty() else "")
-	_weather.position = Vector2(W-422,8)
-	_weather.size = Vector2(410,46)
+	if _mobile: # 手机：时钟/天气牌挪到右列头像卡下面
+		_weather.visible = weather_rect.size.y > 0.0
+		if weather_rect.size.y > 0.0:
+			_weather.position = weather_rect.position
+			_weather.size = weather_rect.size
+	else:
+		_weather.visible = true
+		_weather.position = Vector2(W-422,8)
+		_weather.size = Vector2(410,46)
 
 ## Settings follows the supplied room list, including rooms added in the future.
 func navigation_layout(width: float, order: Array = []) -> Array:
