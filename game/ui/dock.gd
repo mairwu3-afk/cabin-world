@@ -20,7 +20,7 @@ const REFRESH_ACTIVITY := 15.0
 const REFRESH_DETAIL := 8.0
 const PHOTO_CACHE := 24
 const PHOTO_SOURCES := {"qq": "QQ里拍给别人的", "console": "从这里拍的"}
-const PROP_TABS := [["xjhome", "小鲸鱼的小屋"], ["park", "公园"], ["shop", "小卖部"], ["onsen", "汤屋"], ["arcade", "电玩城"], ["life", "生活"], ["album", "相册"], ["memory", "记忆"]]
+const PROP_TABS := [["xjhome", "大肥鱼的小屋"], ["park", "公园"], ["shop", "小卖部"], ["onsen", "汤屋"], ["arcade", "电玩城"], ["life", "生活"], ["album", "相册"], ["memory", "记忆"]]
 
 ## [key, name] of each resident, from residents.json.
 var RESIDENTS: Array = Residents.people().map(func(p): return [p["key"], p["name"]])

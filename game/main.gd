@@ -27,6 +27,7 @@ var _restaurant:Node
 var _home_editor:Control
 var _home_editor_notice:AcceptDialog
 var _map_editor:Control ## separate map editor, opened from Settings (see ui/map_editor.gd)
+var _ai_chat:AIChat ## 大肥鱼聊天面板；网络和工具在 core/ai_client.gd 的 autoload AI 里
 var _map_notice:AcceptDialog
 
 var _test_seconds := -1.0
@@ -107,6 +108,10 @@ func _ready() -> void:
 	if _settings.has_signal("map_requested"):_settings.connect("map_requested",_open_map_editor)
 	_settings.refresh_requested.connect(func():SharedFeed.poll();_dock.refresh())
 	_settings.observe_requested.connect(func():observing=not observing;_layout())
+	if Features.on("ai-chat"): ## 大肥鱼聊天：顶栏「聊天」入口，面板见 ui/ai_chat.gd
+		_ai_chat = AIChat.new()
+		add_child(_ai_chat)
+		_hud.chat_picked.connect(_ai_chat.open)
 	SharedFeed.presence_changed.connect(_on_presence)
 	Actions.phase_started.connect(_on_action_phase)
 	Actions.action_ended.connect(_on_action_ended)
@@ -129,7 +134,7 @@ func _open_home_editor() -> void:
 		_home_editor.request_exit()
 		return
 	if view_scene not in ["xiaojingyu-home","world-arcade","world-restaurant","qianxia-park","qianxia-shop"] and not HomeGrid.definitions.has(view_scene):
-		_home_editor_message("请先切换到公园、小卖部、小鲸鱼家、电玩城或餐厅，再按 F6 布置家具。")
+		_home_editor_message("请先切换到公园、小卖部、大肥鱼家、电玩城或餐厅，再按 F6 布置家具。")
 		return
 	_settings.close()
 	HomeGrid.choose(view_scene);HomeGrid.load_saved()

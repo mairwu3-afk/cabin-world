@@ -142,7 +142,7 @@
   "legacy": {
     "note": "Step A import: the room still draws and walks from this exact data. Removed per room in step B (docs/MAP-EDITOR-DESIGN.md section 8).",
     "source": "res://assets/park-grid.json",
-    "sourceSha256": "9861aa357ee5ae0b611697641e5bb3f704c6b6990a071b14c033cb337e702e9c",
+    "sourceSha256": "e4f4e94ad253cdc02e701e08be7148d49e18045445724c63698938a099ca920f",
     "gridOrigin": [
       0,
       0

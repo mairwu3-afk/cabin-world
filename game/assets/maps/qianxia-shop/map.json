@@ -175,7 +175,7 @@
  "legacy": {
   "note": "Step A import: the room still draws and walks from this exact data. Removed per room in step B (docs/MAP-EDITOR-DESIGN.md section 8).",
   "source": "res://assets/shop-grid.json",
-  "sourceSha256": "7a676b4db8a29481ef54c41502ac5c728d81e811204c40f7b1059e970b93dc12",
+  "sourceSha256": "18a4ccfc1eb99be021f64ecc7080c751c2dd89a3db6538659a0311d2c0878576",
   "gridOrigin": [
    0.0,
    0.0

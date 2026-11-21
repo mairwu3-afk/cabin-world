@@ -71,6 +71,7 @@ func _process(_dt:float):
   center=c.feet;_apply()
 func _input(event:InputEvent):
  if not enabled or not view.is_visible_in_tree():return
+ if UiModal.is_open(get_tree()):return # 设置/聊天面板开着时别把手指当拖动，事件留给 GUI
  if event is InputEventMouseButton:
   var inside=Rect2(view.position,view.size).has_point(event.position)
   if controls.get_global_rect().has_point(event.position):return

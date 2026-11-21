@@ -938,6 +938,7 @@ func if_saved_then(fn: Callable) -> void:
 
 # ---------- keys and leaving ----------
 func _input(e: InputEvent) -> void:
+	if UiModal.is_open(get_tree()): return # 设置/聊天面板开着时让路
 	if not (e is InputEventKey and e.pressed and not e.echo): return
 	var typing := get_viewport().gui_get_focus_owner() is LineEdit
 	if (help.visible or shapes.visible) and e.keycode == KEY_ESCAPE: help.hide(); shapes.hide()

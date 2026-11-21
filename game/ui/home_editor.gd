@@ -275,6 +275,7 @@ func list_selection(_index:int,_value:bool) -> void:
 
 func _input(event:InputEvent) -> void:
 	if not layout.is_empty():HomeGrid.activate(layout)
+	if UiModal.is_open(get_tree()):return # 设置/聊天面板开着时让路，别抢触摸
 	if close_dialog.visible or library_dialog.visible or is_instance_valid(maker_dialog):return
 	if event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE and (pending_asset != "" or not pending_restore.is_empty()):
 		pending_asset="";pending_restore=[];message.text="已取消放置";get_viewport().set_input_as_handled();return

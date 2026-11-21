@@ -2,7 +2,7 @@ extends RefCounted
 ## Outdoor routes sharing an existing front door. Rebind after every layout change
 ## so old saves and remodeled doors receive the same connection as a new game.
 static func refresh()->void:
-	for pair in [["xiaojingyu-home","world-restaurant","restaurant-direct","餐厅直达"],["world-restaurant","xiaojingyu-home","home-direct","小鲸鱼家直达"]]:
+	for pair in [["xiaojingyu-home","world-restaurant","restaurant-direct","餐厅直达"],["world-restaurant","xiaojingyu-home","home-direct","大肥鱼家直达"]]:
 		var from:String=pair[0];var to:String=pair[1];var id:String=pair[2]
 		if not WorldData.scenes.has(from) or not WorldData.scenes.has(to):continue
 		var scene:Dictionary=WorldData.scenes[from]

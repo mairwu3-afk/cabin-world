@@ -52,7 +52,7 @@ const WISHES := [
 	{"id": "learn", "cat": "bond", "text": "学到一点新东西"},
 ]
 const ACHIEVEMENT_NAMES := [["first_fish", "第一条鱼"], ["fish_20", "二十厘米俱乐部"], ["fish_50", "河边老手"], ["species_4", "小河图鉴"], ["kite_5", "风的朋友"], ["skip_6", "水漂高手"], ["foods_8", "小卖部美食家"], ["wish_10", "说到做到"], ["perfect_day", "圆满的一天"], ["first_gift", "第一份心意"], ["friend", "成了朋友"], ["close", "最亲近的人"]]
-const BOND_LEVELS := [[80, "最亲近的人"], [60, "很要好"], [40, "朋友"], [20, "熟悉起来了"], [8, "说得上话"], [0, "刚认识"]]
+const BOND_LEVELS := [[90, "专属饲养员"], [75, "特别关照"], [60, "心软常客"], [45, "嘴硬搭子"], [30, "愿意搭话"], [15, "眼熟的小鱼"], [0, "陌生鱼苗"]]
 const WEEK := ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
 
 ## The real clock in milliseconds. A test can pin it.
@@ -1186,17 +1186,17 @@ func mood_of(who: String, feeling: Dictionary, life, weather: Dictionary, now: f
 	if truthy(flash) and float(flash["until"]) > now:
 		return {"key": "flash", "word": flash["word"], "icon": flash["icon"], "cause": flash["cause"]}
 	if float(nz(feeling.get("satiety"), 70)) < 20:
-		return {"key": "hungry", "word": "饿得慌", "icon": "😣", "cause": "肚子饿得咕咕叫"}
+		return {"key": "hungry", "word": "饿得慌", "icon": "😣", "cause": "肚子叫得比风扇还响"}
 	if float(nz(feeling.get("hydration"), 70)) < 15:
-		return {"key": "thirsty", "word": "渴得慌", "icon": "🥤", "cause": "嗓子干干的"}
+		return {"key": "thirsty", "word": "渴得慌", "icon": "🥤", "cause": "嗓子干得像晒过的海绵"}
 	if energy < 25:
-		return {"key": "tired", "word": "困倦", "icon": "🥱", "cause": "有点累了，想歇一歇"}
+		return {"key": "tired", "word": "困了", "icon": "🥱", "cause": "眼皮打架了，先眯一会儿"}
 	if need["social"] < 25 and not _peer(who).is_empty():
-		return {"key": "lonely", "word": "有点想念", "icon": "🥺", "cause": "好久没和%s说话了" % _peer(who)}
+		return {"key": "lonely", "word": "有点想你", "icon": "🥺", "cause": "好久没和%s说话了" % _peer(who)}
 	if joy >= 78:
-		return {"key": "happy", "word": "很开心", "icon": "😄", "cause": last if last != "" else "今天过得不错"}
+		return {"key": "happy", "word": "尾巴藏不住", "icon": "😄", "cause": last if last != "" else "今天过得不错"}
 	if need["fun"] < 25:
-		return {"key": "bored", "word": "有点无聊", "icon": "😑", "cause": "这阵子都没什么新鲜事"}
+		return {"key": "bored", "word": "有点闷", "icon": "😑", "cause": "这阵子都没什么新鲜事"}
 	if joy < 32:
 		return {"key": "down", "word": "提不起劲", "icon": "😔", "cause": last if last != "" else "说不上为什么"}
 	if n(weather.get("rain")) > 0.5 and calm >= 50:
@@ -1204,8 +1204,8 @@ func mood_of(who: String, feeling: Dictionary, life, weather: Dictionary, now: f
 	if calm >= 72:
 		return {"key": "calm", "word": "平静", "icon": "🍃", "cause": "心里很安静"}
 	if joy >= 58:
-		return {"key": "good", "word": "心情不错", "icon": "🙂", "cause": last if last != "" else "没什么烦心事"}
-	return {"key": "plain", "word": "平平常常", "icon": "😌", "cause": "没什么特别的"}
+		return {"key": "good", "word": "还不错", "icon": "🙂", "cause": last if last != "" else "没什么烦心事"}
+	return {"key": "plain", "word": "懒洋洋", "icon": "😌", "cause": "没什么特别的"}
 
 
 func thought_of(who: String, life, mood: Dictionary, events: Array, now: float) -> String:

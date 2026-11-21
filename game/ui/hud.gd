@@ -4,13 +4,14 @@ extends Control
 
 signal scene_picked(id: String)
 signal settings_picked()
+signal chat_picked()
 signal home_editor_picked()
 signal character_picked(index: int)
 signal follow_picked(index: int)
 signal room_clicked(at: Vector2)
 
 const U := 2.0
-const TAB_NAMES := {"qianxia-park": "公园", "qianxia-shop": "小卖部", "xiaojingyu-home": "小鲸鱼家", "world-arcade": "电玩城", "world-onsen": "汤屋", "world-restaurant": "餐厅"}
+const TAB_NAMES := {"qianxia-park": "公园", "qianxia-shop": "小卖部", "xiaojingyu-home": "大肥鱼家", "world-arcade": "电玩城", "world-onsen": "汤屋", "world-restaurant": "餐厅"}
 const WOOD_D := Color("3b2416")
 const WOOD := Color("7a4a26")
 const WOOD_L := Color("a96f3b")
@@ -103,6 +104,8 @@ func _gui_input(event: InputEvent) -> void:
 				if h[1] >= 0:
 					if h[2] == "@follow": follow_picked.emit(h[1])
 					else: character_picked.emit(h[1])
+				elif h[2] == "@chat":
+					chat_picked.emit()
 				elif h[2] == "@settings":
 					settings_picked.emit()
 				elif h[2] == "@home-editor":
@@ -205,11 +208,13 @@ func _draw_beam_and_tabs(W: float) -> void:
 		_box(x + 2 * U, y + 38 - 2 * U, w - 4 * U, U, PAPER_D if on else WOOD_S)
 		if id == "@settings":
 			_icon([["..wwww..", ".ww..ww.", "ww.ww.ww", "w.w..w.w", "w.w..w.w", "ww.ww.ww", ".ww..ww.", "..wwww.."], {"w":"fdf3dd"}], x+6, y+11)
+		elif id == "@chat":
+			_icon([["........", "..wwww..", ".wwwwww.", "wwwwwwww", "wwwwwwww", "wwwwwwww", ".wwwwww.", "..ww...."], {"w":"fdf3dd"}], x+6, y+11)
 		elif id == "@home-editor":
 			_icon([["ww....ww","ww....ww","wwwwwwww","wwwwwwww","..wwww..","..wwww..","..w..w..","..w..w.."],{"w":"fdf3dd"}],x+6,y+11)
 		else: _icon(ICONS.get(id,ICONS["qianxia-home"]), x + 3 * U, y + 11)
 		_text(name_of, x + 27, y + 25, w-27, 14, INK if on else CREAM)
-		_hits.append([area, -1, id])
+		_hits.append([area.grow_individual(4.0, 0.0, 4.0, 10.0), -1, id]) ## 手机 1:1 像素下 42px 太矮，往左右下放大几像素当触摸目标
 		var present := occupants(id)
 		for j in present.size():
 			var index: int = present[j]
@@ -227,9 +232,11 @@ func navigation_layout(width: float, order: Array = []) -> Array:
 	var y := 10.0
 	var limit := width-438.0
 	var ids := WorldData.available_order() if order.is_empty() else order.duplicate()
+	if Features.on("ai-chat"):
+		ids.append("@chat")
 	ids.append("@settings")
 	for id in ids:
-		var label := "布置家具 F6" if id=="@home-editor" else "设置" if id=="@settings" else str(TAB_NAMES.get(id,WorldData.scenes.get(id,{}).get("name",id)))
+		var label := "聊天" if id=="@chat" else "布置家具 F6" if id=="@home-editor" else "设置" if id=="@settings" else str(TAB_NAMES.get(id,WorldData.scenes.get(id,{}).get("name",id)))
 		var w := 48.0+label.length()*14.0+(0.0 if str(id).begins_with("@") else maxf(2,characters.size())*24.0)
 		if x+w>limit and x>12:
 			x = 12

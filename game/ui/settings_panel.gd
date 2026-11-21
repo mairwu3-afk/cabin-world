@@ -29,26 +29,30 @@ var _resident_options := {}
 const NpcAppearance=preload("res://core/npc_appearance.gd")
 var _npc_status:Label
 var _npc_cards:Array=[]
+var _mobile := OS.has_feature("mobile") ## 手机上 1:1 像素，40px 的按钮只有约 2.6mm，触摸目标要放大
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_to_group("ui_modal") # 触摸守卫：打开时世界的 _input 要让路（见 core/ui_modal.gd）
 	var shade := ColorRect.new()
 	shade.color = Color(0.05,0.08,0.15,0.65)
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(shade)
+	shade.gui_input.connect(func(event: InputEvent):
+		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT: close())
 	_sheet = PanelContainer.new()
 	_sheet.set_anchors_preset(Control.PRESET_CENTER)
-	_sheet.offset_left = -380
-	_sheet.offset_right = 380
-	_sheet.offset_top = -300
-	_sheet.offset_bottom = 300
+	_sheet.offset_left = -450 if _mobile else -380
+	_sheet.offset_right = 450 if _mobile else 380
+	_sheet.offset_top = -380 if _mobile else -300
+	_sheet.offset_bottom = 380 if _mobile else 300
 	_sheet.add_theme_stylebox_override("panel",_box(Hud.PAPER,Hud.WOOD,4,20))
 	add_child(_sheet)
 	var theme_of := Theme.new()
 	var font := SystemFont.new()
 	font.font_names = PackedStringArray(["Microsoft YaHei","SimHei"])
 	theme_of.default_font = font
-	theme_of.default_font_size = 16
+	theme_of.default_font_size = 20 if _mobile else 16
 	for type_of in ["Label","Button","CheckBox","OptionButton","LineEdit"]:
 		for color_of in ["font_color","font_hover_color","font_pressed_color"]: theme_of.set_color(color_of,type_of,Hud.INK)
 	for type_of in ["Button","CheckBox","OptionButton","LineEdit"]:
@@ -244,7 +248,7 @@ func _label(value: String, parent: Node) -> Label:
 func _button(value: String, action: Callable, parent: Node) -> Button:
 	var button := Button.new()
 	button.text = value
-	button.custom_minimum_size.y=40
+	button.custom_minimum_size.y=52 if _mobile else 40
 	button.size_flags_horizontal=SIZE_EXPAND_FILL if parent is GridContainer else SIZE_FILL
 	button.pressed.connect(action)
 	parent.add_child(button)
@@ -254,6 +258,7 @@ func _field(value: String, parent: Node) -> LineEdit:
 	_label(value,parent)
 	var field := LineEdit.new()
 	field.size_flags_horizontal = SIZE_EXPAND_FILL
+	if _mobile: field.custom_minimum_size.y = 48 # 触摸键盘输入框太矮点不进去
 	parent.add_child(field)
 	return field
 

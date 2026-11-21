@@ -199,7 +199,7 @@
  "legacy": {
   "note": "Step A import: the room still draws and walks from this exact data. Removed per room in step B (docs/MAP-EDITOR-DESIGN.md section 8).",
   "source": "res://assets/restaurant-grid.json",
-  "sourceSha256": "a66a40dab188c3bf1892cae6fe936d49b24279f3d57eb4c6a792ed1bcd30159c",
+  "sourceSha256": "3408318ecdd40d4b8994442d1a0761e9401cc7d6f65bc4a61cbf293f28304bed",
   "gridOrigin": [
    0.0,
    0.0

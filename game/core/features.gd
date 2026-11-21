@@ -21,8 +21,9 @@ extends RefCounted
 ##   pocket-money-50      the 1.0 allowance: +20 a day, savings up to 80
 ##   add-bots             the 机器人与房间 entry in Settings is hidden (bots added earlier stay)
 ##   settings-ui          the 1.0 Settings layout
+##   ai-chat              the 大肥鱼 chat entry (ui/ai_chat.gd); the AI autoload itself stays loaded
 const MODULES := ["arcade-renovated","furniture-rotation","gomoku","furniture-workshop","map-editor","character-motion",
-	"seasons","seaside-path","pocket-money-50","add-bots","settings-ui"]
+	"seasons","seaside-path","pocket-money-50","add-bots","settings-ui","ai-chat"]
 ## Which module owns a data file whose 1.0 copy is in res://assets/classic/ (path relative to res://assets/).
 const CLASSIC_FILES := {
 	"arcade-grid.json":"arcade-renovated", "baked/world-arcade.layers.json":"arcade-renovated",

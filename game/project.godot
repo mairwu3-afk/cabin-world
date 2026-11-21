@@ -15,6 +15,7 @@ VadsLink="*res://core/vads_link.gd"
 Actions="*res://core/actions.gd"
 Economy="*res://core/economy.gd"
 Life="*res://core/life.gd"
+AI="*res://core/ai_client.gd"
 
 [display]
 window/size/viewport_width=1920

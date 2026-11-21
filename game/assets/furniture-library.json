@@ -4064,7 +4064,7 @@
       "id": "xiaojingyu-home--xj-bed",
       "name": "鲸鱼床",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 3,
@@ -4233,7 +4233,7 @@
       "id": "xiaojingyu-home--xj-bookshelf",
       "name": "书架",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 3,
@@ -4392,7 +4392,7 @@
       "id": "xiaojingyu-home--xj-writing_desk",
       "name": "写字桌",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 3,
@@ -4551,7 +4551,7 @@
       "id": "xiaojingyu-home--xj-desk",
       "name": "电脑桌",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 2,
@@ -4704,7 +4704,7 @@
       "id": "xiaojingyu-home--xj-computer-chair",
       "name": "电脑椅",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 1,
@@ -4901,7 +4901,7 @@
       "id": "xiaojingyu-home--xj-desk-chair",
       "name": "木椅",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 1,
@@ -5104,7 +5104,7 @@
       "id": "xiaojingyu-home--xj-easel",
       "name": "画架",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 2,
@@ -5257,7 +5257,7 @@
       "id": "xiaojingyu-home--xj-easel-seat",
       "name": "画凳",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 1,
@@ -5295,7 +5295,7 @@
       "id": "xiaojingyu-home--xj-tank",
       "name": "鱼缸",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 3,
@@ -5448,7 +5448,7 @@
       "id": "xiaojingyu-home--xj-sofa",
       "name": "沙发",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 3,
@@ -5671,7 +5671,7 @@
       "id": "xiaojingyu-home--xj-album-cabinet",
       "name": "相册柜",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 3,
@@ -5824,7 +5824,7 @@
       "id": "xiaojingyu-home--xj-album-seat",
       "name": "坐垫",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "floor",
       "footprint": {
         "w": 1,
@@ -5857,7 +5857,7 @@
       "id": "xiaojingyu-home--xj-accessory_table",
       "name": "手机收纳桌",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 2,
@@ -6010,7 +6010,7 @@
       "id": "xiaojingyu-home--xj-lamp-floor",
       "name": "落地灯",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 1,
@@ -6048,7 +6048,7 @@
       "id": "xiaojingyu-home--xj-lamp-shelf",
       "name": "小灯",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 1,
@@ -6081,7 +6081,7 @@
       "id": "xiaojingyu-home--xj-album",
       "name": "相册",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 2,
@@ -6114,7 +6114,7 @@
       "id": "xiaojingyu-home--xj-desk-book",
       "name": "笔记本",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 2,
@@ -6147,7 +6147,7 @@
       "id": "xiaojingyu-home--xj-phone",
       "name": "手机",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 1,
@@ -6182,7 +6182,7 @@
       "id": "xiaojingyu-home--xj-plant-west",
       "name": "盆栽",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 1,
@@ -6220,7 +6220,7 @@
       "id": "xiaojingyu-home--xj-rabbit",
       "name": "兔子摆件",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 1,
@@ -6253,7 +6253,7 @@
       "id": "xiaojingyu-home--xj-ocean-rug",
       "name": "波浪地毯",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "floor",
       "footprint": {
         "w": 6,
@@ -6286,7 +6286,7 @@
       "id": "xiaojingyu-home--chess-seat-left",
       "name": "棋垫·左",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "floor",
       "footprint": {
         "w": 1,
@@ -6319,7 +6319,7 @@
       "id": "xiaojingyu-home--chess-seat-right",
       "name": "棋垫·右",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "floor",
       "footprint": {
         "w": 1,
@@ -6352,7 +6352,7 @@
       "id": "xiaojingyu-home--xj-plant-shelf",
       "name": "书架盆栽",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 1,
@@ -6385,7 +6385,7 @@
       "id": "xiaojingyu-home--xj-plant-desk",
       "name": "桌面盆栽",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 1,
@@ -6418,7 +6418,7 @@
       "id": "xiaojingyu-home--xj-plant-east",
       "name": "卧室盆栽",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 1,
@@ -6456,7 +6456,7 @@
       "id": "xiaojingyu-home--speaker-left",
       "name": "音响·左",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 1,
@@ -6490,7 +6490,7 @@
       "id": "xiaojingyu-home--speaker-right",
       "name": "音响·右",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 1,
@@ -8096,7 +8096,7 @@
       "id": "xiaojingyu-home--legacy--quilt",
       "name": "被子（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 3,
@@ -8131,7 +8131,7 @@
       "id": "xiaojingyu-home--legacy--xj-accessory_table",
       "name": "手机收纳桌（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 2,
@@ -8166,7 +8166,7 @@
       "id": "xiaojingyu-home--legacy--xj-album-cabinet",
       "name": "相册柜（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 4,
@@ -8201,7 +8201,7 @@
       "id": "xiaojingyu-home--legacy--xj-album-seat",
       "name": "坐垫（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "floor",
       "footprint": {
         "w": 1,
@@ -8236,7 +8236,7 @@
       "id": "xiaojingyu-home--legacy--xj-album",
       "name": "相册（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 2,
@@ -8271,7 +8271,7 @@
       "id": "xiaojingyu-home--legacy--xj-bed",
       "name": "鲸鱼床（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 3,
@@ -8306,7 +8306,7 @@
       "id": "xiaojingyu-home--legacy--xj-bookshelf",
       "name": "书架（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 6,
@@ -8341,7 +8341,7 @@
       "id": "xiaojingyu-home--legacy--xj-computer-chair",
       "name": "电脑椅（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 2,
@@ -8376,7 +8376,7 @@
       "id": "xiaojingyu-home--legacy--xj-desk-book",
       "name": "笔记本（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 2,
@@ -8411,7 +8411,7 @@
       "id": "xiaojingyu-home--legacy--xj-desk-chair",
       "name": "木椅（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 1,
@@ -8446,7 +8446,7 @@
       "id": "xiaojingyu-home--legacy--xj-desk",
       "name": "电脑桌（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 5,
@@ -8481,7 +8481,7 @@
       "id": "xiaojingyu-home--legacy--xj-easel-seat",
       "name": "画凳（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 1,
@@ -8516,7 +8516,7 @@
       "id": "xiaojingyu-home--legacy--xj-easel",
       "name": "画架（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 2,
@@ -8551,7 +8551,7 @@
       "id": "xiaojingyu-home--legacy--xj-headphones",
       "name": "耳机（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 1,
@@ -8586,7 +8586,7 @@
       "id": "xiaojingyu-home--legacy--xj-lamp-floor",
       "name": "落地灯（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 1,
@@ -8621,7 +8621,7 @@
       "id": "xiaojingyu-home--legacy--xj-lamp-shelf",
       "name": "小灯（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 1,
@@ -8656,7 +8656,7 @@
       "id": "xiaojingyu-home--legacy--xj-main-light",
       "name": "主灯（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 1,
@@ -8691,7 +8691,7 @@
       "id": "xiaojingyu-home--legacy--xj-phone",
       "name": "手机（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 1,
@@ -8726,7 +8726,7 @@
       "id": "xiaojingyu-home--legacy--xj-plant-desk",
       "name": "桌面盆栽（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 1,
@@ -8761,7 +8761,7 @@
       "id": "xiaojingyu-home--legacy--xj-plant-east",
       "name": "卧室盆栽（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 1,
@@ -8796,7 +8796,7 @@
       "id": "xiaojingyu-home--legacy--xj-plant-shelf",
       "name": "书架盆栽（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 1,
@@ -8831,7 +8831,7 @@
       "id": "xiaojingyu-home--legacy--xj-plant-west",
       "name": "盆栽（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 1,
@@ -8866,7 +8866,7 @@
       "id": "xiaojingyu-home--legacy--xj-rabbit",
       "name": "兔子摆件（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 1,
@@ -8901,7 +8901,7 @@
       "id": "xiaojingyu-home--legacy--xj-sofa",
       "name": "沙发（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 4,
@@ -8936,7 +8936,7 @@
       "id": "xiaojingyu-home--legacy--xj-tank",
       "name": "鱼缸（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 4,
@@ -8971,7 +8971,7 @@
       "id": "xiaojingyu-home--legacy--xj-window",
       "name": "窗户（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 6,
@@ -9006,7 +9006,7 @@
       "id": "xiaojingyu-home--legacy--xj-writing_desk",
       "name": "写字桌（旧版）",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "solid",
       "footprint": {
         "w": 5,
@@ -9496,7 +9496,7 @@
       "id": "xiaojingyu-home--extra--chess-board",
       "name": "棋盘",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 2,
@@ -9531,7 +9531,7 @@
       "id": "xiaojingyu-home--extra--xj-headphones",
       "name": "耳机",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 1,
@@ -9566,7 +9566,7 @@
       "id": "xiaojingyu-home--extra--xj-main-light",
       "name": "主灯",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 1,
@@ -9601,7 +9601,7 @@
       "id": "xiaojingyu-home--extra--xj-window",
       "name": "窗户",
       "scene": "xiaojingyu-home",
-      "scene_name": "小鲸鱼家",
+      "scene_name": "大肥鱼家",
       "layer": "surface",
       "footprint": {
         "w": 3,
@@ -12772,7 +12772,7 @@
     },
     {
       "scene": "xiaojingyu-home",
-      "name": "小鲸鱼家",
+      "name": "大肥鱼家",
       "assets": 59,
       "fixed_environment_not_furniture": []
     },
