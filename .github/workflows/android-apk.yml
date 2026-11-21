@@ -54,6 +54,12 @@ jobs:
           mv /tmp/godot-cache/tpl_extract/templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_STATUS}/
           rm -rf /tmp/godot-cache/templates.tpz /tmp/godot-cache/tpl_extract /tmp/godot-cache/godot.zip
 
+      - name: Cache Android debug keystore (stable signature → 覆盖安装不掉数据)
+        uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: android-debug-keystore-v1
+
       - name: Configure Android debug keystore & Godot editor settings
         run: |
           mkdir -p ~/.android ~/.config/godot build
