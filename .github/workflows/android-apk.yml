@@ -1,0 +1,123 @@
+name: Build Android APK (Godot 4.7.2)
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+env:
+  GODOT_VERSION: 4.7.2
+  GODOT_STATUS: stable
+  PROJECT_DIR: game
+  EXPORT_NAME: Android
+  APK_OUT: build/da-feiyu-cabin-debug.apk
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17 (for keytool & apksigner)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Cache Godot binary & export templates
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: |
+            /tmp/godot-cache
+            ~/.local/share/godot/export_templates
+          key: godot-${{ env.GODOT_VERSION }}-${{ env.GODOT_STATUS }}-linux-x86_64
+
+      - name: Download Godot ${{ env.GODOT_VERSION }}-${{ env.GODOT_STATUS }} & Export Templates
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p /tmp/godot-cache ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_STATUS}
+
+          echo "Downloading Godot Linux binary..."
+          curl -fL "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-${GODOT_STATUS}/Godot_v${GODOT_VERSION}-${GODOT_STATUS}_linux.x86_64.zip" \
+            -o /tmp/godot-cache/godot.zip
+          unzip -o /tmp/godot-cache/godot.zip -d /tmp/godot-cache/
+          chmod +x /tmp/godot-cache/Godot_v${GODOT_VERSION}-${GODOT_STATUS}_linux.x86_64
+
+          echo "Downloading Export Templates..."
+          curl -fL "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-${GODOT_STATUS}/Godot_v${GODOT_VERSION}-${GODOT_STATUS}_export_templates.tpz" \
+            -o /tmp/godot-cache/templates.tpz
+          unzip -o /tmp/godot-cache/templates.tpz -d /tmp/godot-cache/tpl_extract/
+          mv /tmp/godot-cache/tpl_extract/templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_STATUS}/
+          rm -rf /tmp/godot-cache/templates.tpz /tmp/godot-cache/tpl_extract /tmp/godot-cache/godot.zip
+
+      - name: Configure Android debug keystore & Godot editor settings
+        run: |
+          mkdir -p ~/.android ~/.config/godot build
+          if [ ! -f ~/.android/debug.keystore ]; then
+            keytool -genkey -v \
+              -keystore ~/.android/debug.keystore \
+              -storepass android \
+              -alias androiddebugkey \
+              -keypass android \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -dname "CN=Android Debug,O=Android,C=US"
+          fi
+
+          ANDROID_SDK="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          echo "Using ANDROID_SDK=$ANDROID_SDK"
+          echo "Using JAVA_HOME=$JAVA_HOME"
+
+          cat > ~/.config/godot/editor_settings-4.7.tres <<EOF
+          [gd_resource type="EditorSettings" format=3]
+
+          [resource]
+          export/android/android_sdk_path = "${ANDROID_SDK}"
+          export/android/java_sdk_path = "${JAVA_HOME}"
+          export/android/debug_keystore = "${HOME}/.android/debug.keystore"
+          export/android/debug_keystore_user = "androiddebugkey"
+          export/android/debug_keystore_pass = "android"
+          EOF
+          cp ~/.config/godot/editor_settings-4.7.tres ~/.config/godot/editor_settings-4.tres
+
+      - name: Ensure ETC2/ASTC texture compression enabled for Android
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("game/project.godot")
+          text = p.read_text(encoding="utf-8")
+          key = "textures/vram_compression/import_etc2_astc=true"
+          if "import_etc2_astc" not in text:
+              if "[rendering]" in text:
+                  text = text.replace("[rendering]", f"[rendering]\n\n{key}", 1)
+              else:
+                  text += f"\n[rendering]\n\n{key}\n"
+              p.write_text(text, encoding="utf-8")
+              print("Injected import_etc2_astc=true into game/project.godot")
+          else:
+              print("import_etc2_astc already configured")
+          PY
+
+      - name: Import project resources (2-pass for class_name cache)
+        run: |
+          GODOT_BIN="/tmp/godot-cache/Godot_v${GODOT_VERSION}-${GODOT_STATUS}_linux.x86_64"
+          "$GODOT_BIN" --headless --path "${PROJECT_DIR}" --import || true
+          "$GODOT_BIN" --headless --path "${PROJECT_DIR}" --import
+
+      - name: Export Android Debug APK
+        run: |
+          GODOT_BIN="/tmp/godot-cache/Godot_v${GODOT_VERSION}-${GODOT_STATUS}_linux.x86_64"
+          "$GODOT_BIN" --headless --verbose --path "${PROJECT_DIR}" --export-debug "${EXPORT_NAME}" "../${APK_OUT}"
+          ls -lh "${APK_OUT}"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: da-feiyu-cabin-debug-apk
+          path: ${{ env.APK_OUT }}
+          retention-days: 14
