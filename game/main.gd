@@ -93,6 +93,9 @@ func _ready() -> void:
 		_dock_toggle = Button.new()
 		_dock_toggle.z_index = 8
 		_dock_toggle.add_theme_font_size_override("font_size", 18)
+		var ui_font := SystemFont.new()
+		ui_font.font_names = PackedStringArray(["Microsoft YaHei", "Microsoft YaHei UI", "SimHei"])
+		_dock_toggle.add_theme_font_override("font", ui_font) # 默认主题字体没有中文字形，不设会画出空按钮
 		_dock_toggle.add_theme_color_override("font_color", Hud.INK)
 		var box := StyleBoxFlat.new()
 		box.bg_color = Hud.PAPER_H
@@ -511,15 +514,15 @@ func _layout() -> void:
 		if _mobile:
 			var cw := minf(W * 0.42, 320.0)
 			var ch := 120.0
-			cards = [Rect2(W - pad_r - cw, top, cw, ch)]
+			cards = [Rect2(W - pad_r - cw, top + 56.0, cw, ch)]
 			_hud.dock_button_rect = Rect2()
-			if _dock_open:
-				dock_rect = Rect2(W - pad_r - side, top + ch + 8.0, side, low - top - ch - 8.0)
 			if _dock_toggle != null:
-				_dock_toggle.position = Vector2(W - pad_r - cw - 166.0, top)
-				_dock_toggle.size = Vector2(150.0, 48.0)
-				_dock_toggle.text = "收起" if _dock_open else "面板"
+				_dock_toggle.position = Vector2(W - pad_r - cw, top)
+				_dock_toggle.size = Vector2(cw, 48.0)
+				_dock_toggle.text = "收起面板" if _dock_open else "面板"
 				_dock_toggle.visible = not observing
+			if _dock_open:
+				dock_rect = Rect2(W - pad_r - side, top + 56.0 + ch + 8.0, side, low - top - ch - 64.0)
 		else:
 			var cx := W - side - margin
 			cards = [Rect2(cx, top, side, 124.0), Rect2(cx, top + 130.0, side, 124.0)]
